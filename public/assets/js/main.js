@@ -76,40 +76,107 @@
     a.addEventListener('click', function () { select.value = a.dataset.service; });
   });
 
-  /* Форма: проверка полей на странице, отправка пока имитируется (настоящий обработчик подключается отдельно).
-     Без JavaScript работает обычная проверка браузера, поэтому novalidate ставится здесь, а не в разметке. */
-  var form = document.getElementById('lead-form');
-  form.noValidate = true;
-  var result = document.getElementById('form-result');
-  var submit = document.getElementById('f-submit');
-  var fields = [
-    { el: document.getElementById('f-name'), err: document.getElementById('e-name'), msg: 'Напишите, как к вам обращаться', test: function (el) { return el.value.trim().length > 0; } },
-    { el: document.getElementById('f-contact'), err: document.getElementById('e-contact'), msg: 'Укажите Telegram, телефон или email, чтобы я мог ответить', test: function (el) { return el.value.trim().length >= 3; } },
-    { el: document.getElementById('f-consent'), err: document.getElementById('e-consent'), msg: 'Нужно согласие на обработку данных', test: function (el) { return el.checked; } }
-  ];
-  fields.forEach(function (f) {
-    f.el.addEventListener('input', function () { if (f.test(f.el)) { f.err.textContent = ''; f.el.removeAttribute('aria-invalid'); } });
-    f.el.addEventListener('change', function () { if (f.test(f.el)) { f.err.textContent = ''; f.el.removeAttribute('aria-invalid'); } });
-  });
+  /* Форма заявки. Если на странице формы нет (политика, 404), блок ничего не делает.
+     Без JavaScript форма не работает: кнопка отправки в разметке отключена, рядом <noscript> с запасными контактами.
+     Без JavaScript работает и обычная проверка браузера, поэтому novalidate ставится здесь, а не в разметке. */
+  var leadForm = document.getElementById('lead-form');
+  if (leadForm) initLeadForm(leadForm);
 
-  form.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    result.innerHTML = '';
-    var firstBad = null;
-    fields.forEach(function (f) {
-      if (f.test(f.el)) { f.err.textContent = ''; f.el.removeAttribute('aria-invalid'); }
-      else { f.err.textContent = f.msg; f.el.setAttribute('aria-invalid', 'true'); if (!firstBad) firstBad = f.el; }
-    });
-    if (firstBad) { firstBad.focus(); return; }
-
-    submit.disabled = true;
+  function initLeadForm(form) {
+    form.noValidate = true;
+    var result = document.getElementById('form-result');
+    var submit = document.getElementById('f-submit');
+    var elapsed = form.elements['elapsed_ms'];
     var label = submit.firstChild.textContent;
-    submit.firstChild.textContent = 'Отправляю… ';
-    setTimeout(function () {
-      submit.disabled = false;
-      submit.firstChild.textContent = label;
-      result.innerHTML = '<div class="result ok" role="status"><strong>Заявка отправлена</strong><span>Я свяжусь с вами в течение рабочего дня. Спасибо!</span></div>';
-      form.reset();
-    }, 700);
-  });
+    var started = Date.now();
+    var sending = false;
+    submit.disabled = false;
+
+    /* Поля в порядке на странице: по нему выбирается первое с ошибкой. key — имя поля в ответе сервера. */
+    var fields = [
+      { key: 'name', el: document.getElementById('f-name'), err: document.getElementById('e-name'), msg: 'Напишите, как к вам обращаться', test: function (el) { return el.value.trim().length > 0; } },
+      { key: 'contact', el: document.getElementById('f-contact'), err: document.getElementById('e-contact'), msg: 'Укажите Telegram, телефон или email, чтобы я мог ответить', test: function (el) { return el.value.trim().length >= 3; } },
+      { key: 'message', el: document.getElementById('f-msg'), err: document.getElementById('e-message'), msg: 'Сообщение слишком длинное', test: function (el) { return el.value.trim().length <= 4000; } },
+      { key: 'consent', el: document.getElementById('f-consent'), err: document.getElementById('e-consent'), msg: 'Нужно согласие на обработку данных', test: function (el) { return el.checked; } }
+    ];
+    function setError(f, text) { f.err.textContent = text; f.el.setAttribute('aria-invalid', 'true'); }
+    function clearError(f) { f.err.textContent = ''; f.el.removeAttribute('aria-invalid'); }
+    fields.forEach(function (f) {
+      f.el.addEventListener('input', function () { if (f.test(f.el)) clearError(f); });
+      f.el.addEventListener('change', function () { if (f.test(f.el)) clearError(f); });
+    });
+
+    function setSending(on) {
+      sending = on;
+      submit.disabled = on;
+      submit.firstChild.textContent = on ? 'Отправляю… ' : label;
+      form.setAttribute('aria-busy', on ? 'true' : 'false');
+    }
+
+    function show(kind, title, text) {
+      var box = document.createElement('div');
+      box.className = 'result ' + kind;
+      box.setAttribute('role', kind === 'ok' ? 'status' : 'alert');
+      var strong = document.createElement('strong');
+      strong.textContent = title;
+      var span = document.createElement('span');
+      span.textContent = text;
+      box.appendChild(strong);
+      box.appendChild(document.createTextNode(' '));
+      box.appendChild(span);
+      result.innerHTML = '';
+      result.appendChild(box);
+    }
+    function showFailure() {
+      show('bad', 'Не удалось отправить', 'Напишите мне напрямую: Telegram [ВСТАВИТЬ] · email [ВСТАВИТЬ].');
+    }
+
+    /* Ответ сервера: 200 — готово, 400 — ошибки под полями и фокус на первое, 429 — слишком часто, остальное — сбой. */
+    function showAnswer(r) {
+      var data = r.data || {};
+      if (r.status === 200 && data.ok === true) {
+        show('ok', 'Заявка отправлена', 'Я свяжусь с вами в течение рабочего дня. Спасибо!');
+        form.reset();
+        return;
+      }
+      if (r.status === 400 && data.errors && typeof data.errors === 'object') {
+        var firstBad = null;
+        fields.forEach(function (f) {
+          if (typeof data.errors[f.key] === 'string') { setError(f, data.errors[f.key]); if (!firstBad) firstBad = f.el; }
+        });
+        if (firstBad) { firstBad.focus(); return; }
+      }
+      if (r.status === 429) {
+        show('bad', 'Слишком часто.', 'Попробуйте позже или напишите на email [ВСТАВИТЬ].');
+        return;
+      }
+      showFailure();
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (sending) return;
+      result.innerHTML = '';
+      var firstBad = null;
+      fields.forEach(function (f) {
+        if (f.test(f.el)) clearError(f);
+        else { setError(f, f.msg); if (!firstBad) firstBad = f.el; }
+      });
+      if (firstBad) { firstBad.focus(); return; }
+
+      /* Время с загрузки страницы: сервер отбрасывает отправку быстрее 3 секунд как робота. */
+      if (elapsed) elapsed.value = String(Math.round(window.performance && performance.now ? performance.now() : Date.now() - started));
+
+      setSending(true);
+      /* Тело urlencoded, не FormData напрямую: функция Vercel не разбирает multipart. */
+      fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form))
+      }).then(function (res) {
+        return res.json().then(function (data) { return data; }, function () { return null; })
+          .then(function (data) { return { status: res.status, data: data }; });
+      }).then(showAnswer).catch(showFailure).then(function () { setSending(false); });
+    });
+  }
 })();

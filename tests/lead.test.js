@@ -277,7 +277,7 @@ test('telegram request: bot URL, POST, JSON chat_id and text, abort signal for t
   const fetch = spyFetch();
   await deliverLead(lead(), ENV, { fetch, sendMail: spyMail(), now: () => AT, log: silent });
   const { url, init } = fetch.calls[0];
-  assert.equal(url, 'https://api.telegram.org/bot123:test-token/sendMessage');
+  assert.equal(url, `https://api.telegram.org/bot${ENV.TELEGRAM_BOT_TOKEN}/sendMessage`);
   assert.equal(init.method, 'POST');
   assert.equal(init.headers['Content-Type'], 'application/json');
   assert.ok(init.signal instanceof AbortSignal);

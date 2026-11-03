@@ -37,6 +37,8 @@
   --muted: #5E584E;
   --line: #E6E1D8;
   --field-border: #878074; /* рамка полей формы, не менее 3:1 к фону поля и к карточке (WCAG 1.4.11) */
+  --invalid: #C0392B; /* рамка поля с ошибкой */
+  --invalid-text: #B3261E; /* текст ошибки */
   --accent: #C2410C;
   --on-accent: #FFFFFF;
   --shadow: 0 1px 2px rgba(26, 24, 20, .06), 0 8px 24px -12px rgba(26, 24, 20, .18);
@@ -54,6 +56,8 @@
   --muted: #A8A094;
   --line: #2E2B25;
   --field-border: #766E62;
+  --invalid: #F28B82;
+  --invalid-text: #F28B82;
   --accent: #FB923C;
   --on-accent: #14120F;
   --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 28px -12px rgba(0, 0, 0, .6);
@@ -68,6 +72,8 @@
     --muted: #A8A094;
     --line: #2E2B25;
     --field-border: #766E62;
+    --invalid: #F28B82;
+    --invalid-text: #F28B82;
     --accent: #FB923C;
     --on-accent: #14120F;
     --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 28px -12px rgba(0, 0, 0, .6);
@@ -433,6 +439,7 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 
 .form-card { padding: clamp(22px, 4vw, 36px); }
 .form-card form { display: grid; gap: 18px; }
+.form-card noscript { display: block; margin-bottom: 18px; }
 .field { display: grid; gap: 6px; }
 .field label { font-weight: 600; font-size: .9375rem; }
 .field .req { color: var(--accent); }
@@ -443,13 +450,13 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 }
 .field textarea { min-height: 120px; resize: vertical; }
 .field input:hover, .field select:hover, .field textarea:hover { border-color: color-mix(in srgb, var(--text) 40%, var(--field-border)); }
+/* Рамка ошибки. Селектор с тегом (0,2,1) равен по весу правилу .field input[type="text"] и стоит после него,
+   поэтому красная рамка видна. Правило идёт до :focus: у поля в фокусе рамка акцентная, и фокус остаётся виден. */
+.field input[aria-invalid="true"], .field select[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--invalid); }
 .field input:focus, .field select:focus, .field textarea:focus {
   outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
 }
-.field [aria-invalid="true"] { border-color: #C0392B; }
-:root[data-theme="dark"] .field [aria-invalid="true"] { border-color: #F28B82; }
-.err { color: #B3261E; font-size: .875rem; min-height: 0; }
-:root[data-theme="dark"] .err { color: #F28B82; }
+.err { color: var(--invalid-text); font-size: .875rem; min-height: 0; }
 .err:empty { display: none; }
 .check { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; font-size: .9375rem; color: var(--muted); }
 .check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); }

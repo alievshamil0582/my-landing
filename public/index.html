@@ -408,15 +408,21 @@
       </div>
 
       <div class="card form-card reveal" style="--d:100ms">
+        <noscript>
+          <div class="result bad">
+            <strong>Без JavaScript форма не работает</strong>
+            <span>Напишите мне напрямую: email <span class="ph">[ВСТАВИТЬ]</span> · Telegram <span class="ph">[ВСТАВИТЬ]</span> · телефон <span class="ph">[ВСТАВИТЬ]</span>.</span>
+          </div>
+        </noscript>
         <form id="lead-form" action="/api/lead" method="post">
           <div class="field">
             <label for="f-name">Как вас зовут <span class="req" aria-hidden="true">*</span></label>
-            <input type="text" id="f-name" name="name" autocomplete="name" required aria-describedby="e-name">
+            <input type="text" id="f-name" name="name" autocomplete="name" maxlength="100" required aria-describedby="e-name">
             <p class="err" id="e-name" role="alert"></p>
           </div>
           <div class="field">
             <label for="f-contact">Как с вами связаться <span class="req" aria-hidden="true">*</span></label>
-            <input type="text" id="f-contact" name="contact" autocomplete="off" placeholder="Telegram @имя, телефон или email" required aria-describedby="e-contact">
+            <input type="text" id="f-contact" name="contact" autocomplete="off" placeholder="Telegram @имя, телефон или email" maxlength="200" required aria-describedby="e-contact">
             <p class="err" id="e-contact" role="alert"></p>
           </div>
           <div class="field">
@@ -431,7 +437,8 @@
           </div>
           <div class="field">
             <label for="f-msg">Расскажите о задаче</label>
-            <textarea id="f-msg" name="message"></textarea>
+            <textarea id="f-msg" name="message" aria-describedby="e-message"></textarea>
+            <p class="err" id="e-message" role="alert"></p>
           </div>
           <div class="hp" aria-hidden="true">
             <label for="f-web">Ваш сайт</label>
@@ -445,7 +452,7 @@
             </label>
             <p class="err" id="e-consent" role="alert"></p>
           </div>
-          <button class="btn btn-primary" type="submit" id="f-submit">Отправить заявку
+          <button class="btn btn-primary" type="submit" id="f-submit" disabled>Отправить заявку
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
           <div id="form-result" aria-live="polite"></div>
