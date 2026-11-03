@@ -495,8 +495,19 @@ section { padding-block: clamp(64px, 10vw, 120px); }
   border: 1px solid var(--field-border); border-radius: 16px; box-shadow: var(--shadow);
 }
 #consent-banner[hidden] { display: none; }
-/* Пока баннер на экране, элемент в фокусе прокручивается выше него, а не прячется под ним (WCAG 2.4.11) */
-html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: min(15rem, 45vh); }
+/* Пока баннер закреплён внизу, элемент в фокусе прокручивается выше него, а не прячется под ним (WCAG 2.4.11).
+   15rem с запасом больше высоты баннера (до 216px при ширине 320px); в низких окнах баннер не закреплён, см. ниже. */
+html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: 15rem; }
+/* Низкое окно (увеличение до 400%, телефон боком): баннер не закреплён, а идёт в потоке в конце страницы
+   и ничего не закрывает (WCAG 1.4.10, 2.4.11). Те же ширина и поля; доступен прокруткой и Tab.
+   Порог 32rem (512px): ниже него даже 15rem отступа не гарантируют, что поле в фокусе целиком над баннером. */
+@media (max-height: 32rem) {
+  #consent-banner {
+    position: static; max-height: none; overflow: visible;
+    margin: var(--gutter) 0 calc(var(--gutter) + env(safe-area-inset-bottom, 0px)) max(var(--gutter), calc((100% - 1120px) / 2));
+  }
+  html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: auto; }
+}
 .consent-title { font: 700 1rem/1.3 var(--font-head); letter-spacing: -.005em; }
 .consent-text { font-size: .875rem; line-height: 1.5; color: var(--muted); }
 .consent-text a { color: var(--text); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }

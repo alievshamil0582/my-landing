@@ -86,8 +86,13 @@
     var a = t.closest('a[href]');
     if (!a) return;
     var href = (a.getAttribute('href') || '').trim().toLowerCase();
-    if (a.closest('.project') && href && href.charAt(0) !== '#') goal('project_open');
-    if (href.indexOf('https://t.me/') === 0 || href.indexOf('tg://') === 0) goal('telegram_click');
+    /* Ссылка внутри .project считается только открытием проекта (в том числе демо-бота в Telegram);
+       telegram_click измеряет связь с владельцем, поэтому только для ссылок вне .project. */
+    if (a.closest('.project')) {
+      if (href && href.charAt(0) !== '#') goal('project_open');
+    } else if (href.indexOf('https://t.me/') === 0 || href.indexOf('tg://') === 0) {
+      goal('telegram_click');
+    }
   });
 
   /* Кнопки «Обсудить» подставляют услугу в форму */
