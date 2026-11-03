@@ -519,6 +519,9 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 /* Пока баннер закреплён внизу, элемент в фокусе прокручивается выше него, а не прячется под ним (WCAG 2.4.11).
    15rem с запасом больше высоты баннера (до 216px при ширине 320px); в низких окнах баннер не закреплён, см. ниже. */
 html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: 15rem; }
+/* В конце страницы прокручивать выше баннера некуда: пока он закреплён, подвал получает запас снизу,
+   и ссылки подвала в фокусе не оказываются целиком под баннером (WCAG 2.4.11). */
+html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: calc(36px + 15rem); }
 /* Низкое окно (увеличение до 400%, телефон боком): баннер не закреплён, а идёт в потоке в конце страницы
    и ничего не закрывает (WCAG 1.4.10, 2.4.11). Те же ширина и поля; доступен прокруткой и Tab.
    Порог 32rem (512px): ниже него даже 15rem отступа не гарантируют, что поле в фокусе целиком над баннером. */
@@ -528,6 +531,7 @@ html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: 15rem; }
     margin: var(--gutter) 0 calc(var(--gutter) + env(safe-area-inset-bottom, 0px)) max(var(--gutter), calc((100% - 1120px) / 2));
   }
   html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: auto; }
+  html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: 36px; }
 }
 .consent-title { font: 700 1rem/1.3 var(--font-head); letter-spacing: -.005em; }
 .consent-text { font-size: .875rem; line-height: 1.5; color: var(--muted); }
