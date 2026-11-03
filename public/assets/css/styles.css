@@ -46,6 +46,7 @@
   --font-body: "Inter", "Inter Fallback", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
   --font-hand: "Caveat", "Segoe Script", cursive;
+  --consent-clear: 15rem; /* запас снизу под закреплённым баннером cookie: с запасом больше его высоты (до 216px при ширине 320px) */
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -102,7 +103,6 @@ a { color: inherit; }
 ::selection { background: #FFEF5B; color: #15171A; }
 
 .container { width: min(1120px, 100% - 2 * clamp(16px, 4vw, 32px)); margin-inline: auto; }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip {
   position: absolute; left: 16px; top: -64px; z-index: 100;
   background: var(--accent); color: var(--on-accent); padding: 10px 16px; border-radius: 8px; font-weight: 600;
@@ -350,7 +350,7 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 .services-note { margin-top: 28px; color: var(--muted); }
 
 /* ---------- Процесс ---------- */
-.steps { display: grid; gap: 0; counter-reset: step; }
+.steps { display: grid; gap: 0; }
 .step { position: relative; padding: 0 0 32px 28px; border-left: 2px dashed var(--line); }
 .step:last-child { padding-bottom: 0; border-left-color: transparent; }
 .step::before {
@@ -469,7 +469,7 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 .result small { color: var(--muted); }
 
 /* ---------- Футер ---------- */
-.site-footer { border-top: 1px solid var(--line); padding-block: 48px 36px; background: var(--band); }
+.site-footer { --footer-pad-bottom: 36px; border-top: 1px solid var(--line); padding-block: 48px var(--footer-pad-bottom); background: var(--band); }
 .foot-grid { display: grid; gap: 28px; }
 @media (min-width: 800px) { .foot-grid { grid-template-columns: 1.3fr 1fr 1fr; } }
 .foot-grid h2 { font: 500 .75rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
@@ -517,21 +517,21 @@ section { padding-block: clamp(64px, 10vw, 120px); }
 }
 #consent-banner[hidden] { display: none; }
 /* Пока баннер закреплён внизу, элемент в фокусе прокручивается выше него, а не прячется под ним (WCAG 2.4.11).
-   15rem с запасом больше высоты баннера (до 216px при ширине 320px); в низких окнах баннер не закреплён, см. ниже. */
-html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: 15rem; }
+   --consent-clear (15rem) с запасом больше высоты баннера; в низких окнах баннер не закреплён, см. ниже. */
+html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: var(--consent-clear); }
 /* В конце страницы прокручивать выше баннера некуда: пока он закреплён, подвал получает запас снизу,
    и ссылки подвала в фокусе не оказываются целиком под баннером (WCAG 2.4.11). */
-html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: calc(36px + 15rem); }
+html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: calc(var(--footer-pad-bottom) + var(--consent-clear)); }
 /* Низкое окно (увеличение до 400%, телефон боком): баннер не закреплён, а идёт в потоке в конце страницы
    и ничего не закрывает (WCAG 1.4.10, 2.4.11). Те же ширина и поля; доступен прокруткой и Tab.
-   Порог 32rem (512px): ниже него даже 15rem отступа не гарантируют, что поле в фокусе целиком над баннером. */
+   Порог 32rem (512px): ниже него даже --consent-clear не гарантирует, что поле в фокусе целиком над баннером. */
 @media (max-height: 32rem) {
   #consent-banner {
     position: static; max-height: none; overflow: visible;
     margin: var(--gutter) 0 calc(var(--gutter) + env(safe-area-inset-bottom, 0px)) max(var(--gutter), calc((100% - 1120px) / 2));
   }
   html:has(#consent-banner:not([hidden])) { scroll-padding-bottom: auto; }
-  html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: 36px; }
+  html:has(#consent-banner:not([hidden])) .site-footer { padding-bottom: var(--footer-pad-bottom); }
 }
 .consent-title { font: 700 1rem/1.3 var(--font-head); letter-spacing: -.005em; }
 .consent-text { font-size: .875rem; line-height: 1.5; color: var(--muted); }
