@@ -65,6 +65,11 @@
   if (menu) menu.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', function () { if (menu.hidePopover) menu.hidePopover(); });
   });
+  /* Меню на весь экран не удерживает фокус: Tab из последнего пункта (или Shift+Tab из первого) увёл бы его
+     на кнопки под меню, где его не видно (WCAG 2.4.11). Когда фокус уходит за пределы меню, оно закрывается. */
+  if (menu && menu.hidePopover) menu.addEventListener('focusout', function (e) {
+    if (e.relatedTarget && !menu.contains(e.relatedTarget)) menu.hidePopover();
+  });
 
   /* Ссылки-заглушки href="#" не прокручивают страницу к началу */
   document.addEventListener('click', function (e) {
