@@ -11,21 +11,20 @@
 
   var meta = document.querySelector('meta[name="ym-id"]');
   var raw = meta ? (meta.getAttribute('content') || '').trim() : '';
-  var counterId = /^\d+$/.test(raw) ? Number(raw) : 0;
+  var n = Number(raw);
+  var counterId = /^\d+$/.test(raw) && Number.isSafeInteger(n) ? n : 0; /* 400 цифр дали бы Infinity, а не номер */
   var loaded = false;
-  var denied = false; /* на этой странице выбрано «Отклонить»: счётчик уже не выгрузить, но цели в него больше не идут */
-  var memory = null; /* выбор на время жизни страницы, если localStorage недоступен */
+  var denied = false; /* на этой странице выбрано «Отклонить»: цели в Метрику больше не идут */
+  var script = null; /* тег Метрики вставляется один раз, даже если после «Отклонить» снова нажали «Принять» */
 
   function readChoice() {
     var v = null;
-    try { v = localStorage.getItem(KEY); } catch (e) { /* заблокирован: берём из памяти */ }
-    if (v !== 'granted' && v !== 'denied') v = memory;
+    try { v = localStorage.getItem(KEY); } catch (e) { /* заблокирован: сохранённого выбора нет */ }
     return v === 'granted' || v === 'denied' ? v : null;
   }
 
   function saveChoice(v) {
-    memory = v;
-    try { localStorage.setItem(KEY, v); } catch (e) { /* остаётся только в памяти страницы */ }
+    try { localStorage.setItem(KEY, v); } catch (e) { /* заблокирован: выбор действует до перезагрузки страницы */ }
   }
 
   function loadCounter() {
@@ -34,10 +33,11 @@
     window.ym = window.ym || function () { (window.ym.a = window.ym.a || []).push(arguments); };
     window.ym.l = Date.now();
     window.ym(counterId, 'init', { clickmap: false, trackLinks: true, accurateTrackBounce: true, webvisor: false });
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://mc.yandex.ru/metrika/tag.js';
-    document.head.appendChild(s);
+    if (script) return;
+    script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://mc.yandex.ru/metrika/tag.js';
+    document.head.appendChild(script);
   }
 
   /* Цель в Метрику: только после согласия, пока на странице не выбрано «Отклонить», и только из списка GOALS.
@@ -67,10 +67,14 @@
     denied = value === 'denied'; /* «Принять» после отказа снимает запрет */
     banner.hidden = true;
     if (value === 'granted') loadCounter();
+    else if (loaded) {
+      /* «Принять» было раньше на этой же странице: счётчик останавливается (метод destruct из документации Метрики) */
+      try { window.ym(counterId, 'destruct'); } catch (e) { /* аналитика не должна ломать страницу */ }
+      loaded = false;
+    }
     var back = opener && !opener.hidden ? opener : document.getElementById('main');
     opener = null;
     if (hadFocus && back) {
-      if (back.id === 'main' && !back.hasAttribute('tabindex')) back.setAttribute('tabindex', '-1');
       back.focus({ preventScroll: true });
     }
   }
@@ -81,13 +85,12 @@
   });
 
   /* «Настройки cookie» в подвале (кнопки скрыты в разметке, показываются только здесь): стирают сохранённый выбор,
-     снова показывают баннер и переводят в него фокус. Если счётчик уже загружен на этой странице («Принять» было
-     раньше), выгрузить его нельзя: отказ действует со следующей загрузки страницы. */
+     снова показывают баннер и переводят в него фокус. Если «Принять» было раньше на этой же странице, а теперь
+     выбрано «Отклонить», счётчик останавливается сразу (см. choose). */
   document.querySelectorAll('[data-consent-reset]').forEach(function (btn) {
     btn.hidden = false;
     btn.addEventListener('click', function () {
-      memory = null;
-      try { localStorage.removeItem(KEY); } catch (e) { /* заблокирован: выбор жил только в памяти, она уже очищена */ }
+      try { localStorage.removeItem(KEY); } catch (e) { /* заблокирован: сохранённого выбора нет */ }
       opener = btn;
       banner.hidden = false;
       var first = banner.querySelector('button');
