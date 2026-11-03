@@ -70,6 +70,26 @@
     if (a) e.preventDefault();
   });
 
+  /* Цели Метрики: один делегированный обработчик. Отправляет их leadAnalytics.goal (consent.js),
+     а он молчит, пока нет согласия. Если consent.js не загрузился, goal() просто ничего не делает. */
+  function goal(name) {
+    try {
+      var la = window.leadAnalytics;
+      if (la && typeof la.goal === 'function') la.goal(name);
+    } catch (err) { /* аналитика не должна ломать страницу */ }
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var marked = t.closest('[data-goal]');
+    if (marked) goal(marked.getAttribute('data-goal'));
+    var a = t.closest('a[href]');
+    if (!a) return;
+    var href = (a.getAttribute('href') || '').trim().toLowerCase();
+    if (a.closest('.project') && href && href.charAt(0) !== '#') goal('project_open');
+    if (href.indexOf('https://t.me/') === 0 || href.indexOf('tg://') === 0) goal('telegram_click');
+  });
+
   /* Кнопки «Обсудить» подставляют услугу в форму */
   var select = document.getElementById('f-service');
   document.querySelectorAll('[data-service]').forEach(function (a) {
@@ -136,6 +156,7 @@
       var data = r.data || {};
       if (r.status === 200 && data.ok === true) {
         show('ok', 'Заявка отправлена', 'Я свяжусь с вами в течение рабочего дня. Спасибо!');
+        goal('form_submit');
         form.reset();
         return;
       }
