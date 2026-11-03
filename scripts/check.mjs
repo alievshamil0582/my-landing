@@ -36,14 +36,15 @@ const attr = (tag, name) => {
 };
 
 // (а) заглушки в публичном тексте: пометки [ВСТАВИТЬ…], [ПОДТВЕРДИТЬ…], [УТОЧНИТЬ…], [ИМЯ]
-// (.html без комментариев и .js) и любые элементы с классом ph (.html без комментариев),
+// (.html без комментариев, а также .js, .xml, .txt, .svg, .json, .webmanifest: домен в sitemap.xml и robots.txt
+// ловится тут же) и любые элементы с классом ph (.html без комментариев),
 // даже если в них обычный текст без скобок: его тоже подтверждает владелец.
 function checkPlaceholders() {
   const re = /\[(?:ВСТАВИТЬ|ПОДТВЕРДИТЬ|УТОЧНИТЬ|ИМЯ)[^\]]*\]/g;
   const report = release ? err : warn;
   const lineOf = (text, index) => text.slice(0, index).split('\n').length;
   let found = 0;
-  for (const f of [...ofType('.html'), ...ofType('.js')]) {
+  for (const f of ['.html', '.js', '.xml', '.txt', '.svg', '.json', '.webmanifest'].flatMap(ofType)) {
     const text = extname(f) === '.html' ? stripHtml(read(f)) : read(f);
     for (const m of text.matchAll(re)) {
       found++;
