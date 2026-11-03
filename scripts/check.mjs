@@ -9,7 +9,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const pub = join(root, 'public');
-const release = process.argv.includes('--release');
+const args = process.argv.slice(2);
+const release = args.includes('--release');
+const unknownArgs = args.filter((a) => a !== '--release');
 
 const counts = { ОШИБКА: 0, ПРЕДУПРЕЖДЕНИЕ: 0, ОК: 0 };
 const say = (level, msg) => { counts[level]++; console.log(`${level} ${msg}`); };
@@ -33,20 +35,29 @@ const attr = (tag, name) => {
   return m ? (m[1] ?? m[2] ?? m[3]) : null;
 };
 
-// (а) пометки [ВСТАВИТЬ…], [ПОДТВЕРДИТЬ…], [УТОЧНИТЬ…] в публичном тексте (.html без комментариев и .js)
+// (а) заглушки в публичном тексте: пометки [ВСТАВИТЬ…], [ПОДТВЕРДИТЬ…], [УТОЧНИТЬ…], [ИМЯ]
+// (.html без комментариев и .js) и любые элементы с классом ph (.html без комментариев),
+// даже если в них обычный текст без скобок: его тоже подтверждает владелец.
 function checkPlaceholders() {
-  const re = /\[(?:ВСТАВИТЬ|ПОДТВЕРДИТЬ|УТОЧНИТЬ)[^\]]*\]/g;
+  const re = /\[(?:ВСТАВИТЬ|ПОДТВЕРДИТЬ|УТОЧНИТЬ|ИМЯ)[^\]]*\]/g;
   const report = release ? err : warn;
+  const lineOf = (text, index) => text.slice(0, index).split('\n').length;
   let found = 0;
   for (const f of [...ofType('.html'), ...ofType('.js')]) {
     const text = extname(f) === '.html' ? stripHtml(read(f)) : read(f);
     for (const m of text.matchAll(re)) {
       found++;
-      const line = text.slice(0, m.index).split('\n').length;
-      report(`${rel(f)}:${line} пометка ${m[0].replace(/\s+/g, ' ')}`);
+      report(`${rel(f)}:${lineOf(text, m.index)} пометка ${m[0].replace(/\s+/g, ' ')}`);
     }
   }
-  if (!found) ok('пометок [ВСТАВИТЬ/ПОДТВЕРДИТЬ/УТОЧНИТЬ] нет');
+  for (const [f, t] of htmlPages()) {
+    for (const m of t.matchAll(/<[a-z][^>]*>/gi)) {
+      if (!/(^|\s)ph(\s|$)/.test(attr(m[0], 'class') ?? '')) continue;
+      found++;
+      report(`${rel(f)}:${lineOf(t, m.index)} заглушка ${m[0].replace(/\s+/g, ' ')}`);
+    }
+  }
+  if (!found) ok('пометок [ВСТАВИТЬ/ПОДТВЕРДИТЬ/УТОЧНИТЬ/ИМЯ] и элементов .ph нет');
 }
 
 // (б) размер после gzip: весь JS не более 60 КБ, весь CSS не более 30 КБ
@@ -59,7 +70,8 @@ function checkSizes() {
   }
 }
 
-// (в) в каждом .html есть lang="ru", <title>, meta description; в index.html ровно один <h1>
+// (в) в каждом .html есть lang="ru", <title>, meta description; в public/index.html ровно один <h1>
+const isIndex = (f) => f === join(pub, 'index.html');
 function checkHtml() {
   for (const [f, t] of htmlPages()) {
     const problems = [];
@@ -68,12 +80,12 @@ function checkHtml() {
     const hasDescription = [...t.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) =>
       attr(tag, 'name')?.toLowerCase() === 'description' && (attr(tag, 'content') ?? '').trim());
     if (!hasDescription) problems.push('нет meta description или он пустой');
-    if (f === join(pub, 'index.html')) {
+    if (isIndex(f)) {
       const h1 = (t.match(/<h1\b/gi) ?? []).length;
       if (h1 !== 1) problems.push(`в index.html должен быть ровно один <h1>, найдено ${h1}`);
     }
     if (problems.length) problems.forEach((p) => err(`${rel(f)}: ${p}`));
-    else ok(`${rel(f)}: lang, title, description${f.endsWith('index.html') ? ', один h1' : ''}`);
+    else ok(`${rel(f)}: lang, title, description${isIndex(f) ? ', один h1' : ''}`);
   }
   if (!existsSync(join(pub, 'index.html'))) err('нет public/index.html');
 }
@@ -155,7 +167,11 @@ function checkContrast() {
   }
 }
 
-if (!files.length) {
+if (unknownArgs.length) {
+  // Опечатка вроде --relase не должна превращать релизную проверку в мягкий прогон
+  err(`неизвестный аргумент: ${unknownArgs.join(' ')}`);
+  console.log('Использование: node scripts/check.mjs [--release]');
+} else if (!files.length) {
   err('в public/ нет файлов или папки нет');
 } else {
   checkPlaceholders();
