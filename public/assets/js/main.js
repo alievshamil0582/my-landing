@@ -26,15 +26,21 @@
   function onScroll() { header.classList.toggle('scrolled', window.scrollY > 8); }
   onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
 
-  /* Появление блоков при прокрутке (один раз) */
-  var reveals = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !reduce) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    reveals.forEach(function (el) { io.observe(el); });
-  } else {
-    reveals.forEach(function (el) { el.classList.add('in'); });
+  /* Появление блоков при прокрутке (один раз). Если настройка не удалась, показываем всё сразу.
+     data-reveal="ready" сообщает скрипту в <head>, что запасной вариант (reveal-all через 3 с) не нужен. */
+  try {
+    var reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !reduce) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      reveals.forEach(function (el) { io.observe(el); });
+    } else {
+      reveals.forEach(function (el) { el.classList.add('in'); });
+    }
+    root.setAttribute('data-reveal', 'ready');
+  } catch (err) {
+    root.classList.add('reveal-all');
   }
 
   /* Подсветка текущего раздела в меню */

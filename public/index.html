@@ -25,6 +25,9 @@
     if (m !== 'light' && m !== 'dark') m = 'system';
     r.dataset.mode = m;
     if (m !== 'system') r.setAttribute('data-theme', m);
+    // Запасной вариант: если main.js не загрузился или упал до настройки появления блоков,
+    // через 3 секунды всё становится видимым (main.js ставит data-reveal="ready", когда настройка прошла)
+    setTimeout(function () { if (r.getAttribute('data-reveal') !== 'ready') r.classList.add('reveal-all'); }, 3000);
   })();
 </script>
 
