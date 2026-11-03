@@ -68,7 +68,7 @@
   /* Меню на весь экран не удерживает фокус: Tab из последнего пункта (или Shift+Tab из первого) увёл бы его
      на кнопки под меню, где его не видно (WCAG 2.4.11). Когда фокус уходит за пределы меню, оно закрывается. */
   if (menu && menu.hidePopover) menu.addEventListener('focusout', function (e) {
-    if (e.relatedTarget && !menu.contains(e.relatedTarget)) menu.hidePopover();
+    if (e.relatedTarget && !menu.contains(e.relatedTarget) && menu.matches(':popover-open')) menu.hidePopover();
   });
 
   /* Ссылки-заглушки href="#" не прокручивают страницу к началу */
@@ -142,12 +142,12 @@
       sending = on;
       submit.disabled = on;
       submit.firstChild.textContent = on ? 'Отправляю… ' : label;
-      form.setAttribute('aria-busy', on ? 'true' : 'false');
     }
 
     function show(kind, title, text) {
       var box = document.createElement('div');
       box.className = 'result ' + kind;
+      box.tabIndex = -1; /* фокус программный: клавиатура и скринридер сразу попадают на результат */
       box.setAttribute('role', kind === 'ok' ? 'status' : 'alert');
       var strong = document.createElement('strong');
       strong.textContent = title;
@@ -158,6 +158,7 @@
       box.appendChild(span);
       result.innerHTML = '';
       result.appendChild(box);
+      box.focus();
     }
     function showFailure() {
       show('bad', 'Не удалось отправить', 'Напишите мне напрямую: Telegram [ВСТАВИТЬ] · email [ВСТАВИТЬ].');
@@ -201,12 +202,15 @@
       if (elapsed) elapsed.value = String(Math.round(window.performance && performance.now ? performance.now() : Date.now() - started));
 
       setSending(true);
-      /* Тело urlencoded, не FormData напрямую: функция Vercel не разбирает multipart. */
-      fetch('/api/lead', {
+      /* Тело urlencoded, не FormData напрямую: функция Vercel не разбирает multipart.
+         Через 15 секунд запрос прерывается и попадает в .catch: кнопка снова активна, видны запасные контакты. */
+      var options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(new FormData(form))
-      }).then(function (res) {
+      };
+      if (window.AbortSignal && typeof AbortSignal.timeout === 'function') options.signal = AbortSignal.timeout(15000);
+      fetch('/api/lead', options).then(function (res) {
         return res.json().then(function (data) { return data; }, function () { return null; })
           .then(function (data) { return { status: res.status, data: data }; });
       }).then(showAnswer).catch(showFailure).then(function () { setSending(false); });
