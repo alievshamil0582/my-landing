@@ -5,16 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>[ИМЯ] — сайты, боты и ИИ-агенты для бизнеса и экспертов</title>
 <meta name="description" content="Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения. Знаю общепит изнутри. Посмотрите работы и обсудите проект.">
-<meta name="theme-color" content="#FAF8F5">
+<link rel="canonical" href="https://[ВСТАВИТЬ-ДОМЕН]/">
+<meta name="theme-color" content="#FAF8F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta property="og:title" content="[ИМЯ] — сайты, боты и ИИ-агенты для бизнеса и экспертов">
 <meta property="og:description" content="Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения. Знаю общепит изнутри.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://[ВСТАВИТЬ-ДОМЕН]/">
+<meta property="og:image" content="https://[ВСТАВИТЬ-ДОМЕН]/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Цифровой мастер: сайты, боты, ИИ-агенты и приложения">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="[ИМЯ] — сайты, боты и ИИ-агенты для бизнеса и экспертов">
+<meta name="twitter:description" content="Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения. Знаю общепит изнутри.">
+<meta name="twitter:image" content="https://[ВСТАВИТЬ-ДОМЕН]/og.png">
 <!-- Номер счётчика Яндекс.Метрики; пустой, пока владелец не вписал. Подключается только после согласия (баннер). -->
 <meta name="ym-id" content="">
 
-<!-- Шрифты свои (assets/fonts), не более двух preload: Onest и Inter, кириллица -->
-<link rel="preload" href="assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/inter-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Шрифты свои (/assets/fonts), не более двух preload: Onest и Inter, кириллица -->
+<link rel="preload" href="/assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Структурированные данные: человек и сайт. Имя и домен подставляет владелец (проверка перед релизом их ловит). -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://[ВСТАВИТЬ-ДОМЕН]/#person",
+      "name": "[ИМЯ]",
+      "jobTitle": "Цифровой мастер",
+      "description": "Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения для бизнеса и экспертов. Работаю в ресторанной сфере и пишу код сам.",
+      "url": "https://[ВСТАВИТЬ-ДОМЕН]/",
+      "knowsAbout": ["Разработка сайтов", "Telegram-боты", "ИИ-агенты", "Веб-приложения"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://[ВСТАВИТЬ-ДОМЕН]/#website",
+      "name": "[ИМЯ]",
+      "url": "https://[ВСТАВИТЬ-ДОМЕН]/",
+      "inLanguage": "ru"
+    }
+  ]
+}
+</script>
 
 <script>
   // Тема и флаг JS ставятся до отрисовки, чтобы не было мерцания
@@ -31,9 +69,9 @@
   })();
 </script>
 
-<link rel="stylesheet" href="assets/css/styles.css">
-<script src="assets/js/consent.js" defer></script>
-<script src="assets/js/main.js" defer></script>
+<link rel="stylesheet" href="/assets/css/styles.css">
+<script src="/assets/js/consent.js" defer></script>
+<script src="/assets/js/main.js" defer></script>
 </head>
 <body>
 
@@ -449,7 +487,7 @@
           <div class="field">
             <label class="check" for="f-consent">
               <input type="checkbox" id="f-consent" name="consent" required aria-describedby="e-consent">
-              <span>Согласен на обработку персональных данных (<a class="tlink" href="#"><span class="ph">политика обработки персональных данных</span></a>)</span>
+              <span>Согласен на обработку персональных данных (<a class="tlink" href="/privacy/">политика обработки персональных данных</a>)</span>
             </label>
             <p class="err" id="e-consent" role="alert"></p>
           </div>
@@ -485,8 +523,9 @@
         <ul>
           <li>Telegram <span class="ph">[ВСТАВИТЬ]</span></li>
           <li>Email <span class="ph">[ВСТАВИТЬ]</span></li>
-          <li><a href="#"><span class="ph">Политика обработки персональных данных</span></a></li>
+          <li><a href="/privacy/">Политика обработки персональных данных</a></li>
         </ul>
+        <button type="button" class="link-btn" data-consent-reset hidden>Настройки cookie</button>
       </div>
     </div>
     <div class="foot-bottom">
