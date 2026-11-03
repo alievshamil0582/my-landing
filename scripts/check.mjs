@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Проверка перед релизом: node scripts/check.mjs [--release]
-// Читает всё в public/ рекурсивно. С --release пометки [ВСТАВИТЬ…] считаются ошибкой.
+// Читает всё в public/ рекурсивно. С --release пометки [ВСТАВИТЬ…] и ссылки-заглушки href="#" считаются ошибкой.
 // Только встроенные модули Node. Код выхода 1, если есть хотя бы одна ОШИБКА.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
@@ -29,6 +29,7 @@ const read = (f) => readFileSync(f, 'utf8');
 const blank = (m) => m.replace(/[^\n]/g, ' ');
 const stripHtml = (s) => s.replace(/<!--[\s\S]*?-->/g, blank);
 const stripCss = (s) => s.replace(/\/\*[\s\S]*?\*\//g, blank);
+const lineOf = (text, index) => text.slice(0, index).split('\n').length;
 const htmlPages = () => ofType('.html').map((f) => [f, stripHtml(read(f))]);
 const attr = (tag, name) => {
   const m = tag?.match(new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'));
@@ -40,9 +41,8 @@ const attr = (tag, name) => {
 // ловится тут же) и любые элементы с классом ph (.html без комментариев),
 // даже если в них обычный текст без скобок: его тоже подтверждает владелец.
 function checkPlaceholders() {
-  const re = /\[(?:ВСТАВИТЬ|ПОДТВЕРДИТЬ|УТОЧНИТЬ|ИМЯ)[^\]]*\]/g;
+  const re = /\[[^\][]*(?:ВСТАВИТЬ|ПОДТВЕРДИТЬ|УТОЧНИТЬ|ИМЯ)[^\]]*\]/g; // слово-пометка в любом месте скобок; «[» до неё нельзя: иначе массив JSON-LD склеится в одну находку
   const report = release ? err : warn;
-  const lineOf = (text, index) => text.slice(0, index).split('\n').length;
   let found = 0;
   for (const f of ['.html', '.js', '.xml', '.txt', '.svg', '.json', '.webmanifest'].flatMap(ofType)) {
     const text = extname(f) === '.html' ? stripHtml(read(f)) : read(f);
@@ -71,8 +71,7 @@ function checkSizes() {
   }
 }
 
-// (в) в каждом .html есть lang="ru", <title>, meta description; в public/index.html ровно один <h1>
-const isIndex = (f) => f === join(pub, 'index.html');
+// (в) в каждом .html есть lang="ru", <title>, meta description и ровно один <h1>
 function checkHtml() {
   for (const [f, t] of htmlPages()) {
     const problems = [];
@@ -81,12 +80,10 @@ function checkHtml() {
     const hasDescription = [...t.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) =>
       attr(tag, 'name')?.toLowerCase() === 'description' && (attr(tag, 'content') ?? '').trim());
     if (!hasDescription) problems.push('нет meta description или он пустой');
-    if (isIndex(f)) {
-      const h1 = (t.match(/<h1\b/gi) ?? []).length;
-      if (h1 !== 1) problems.push(`в index.html должен быть ровно один <h1>, найдено ${h1}`);
-    }
+    const h1 = (t.match(/<h1\b/gi) ?? []).length;
+    if (h1 !== 1) problems.push(`должен быть ровно один <h1>, найдено ${h1}`);
     if (problems.length) problems.forEach((p) => err(`${rel(f)}: ${p}`));
-    else ok(`${rel(f)}: lang, title, description${isIndex(f) ? ', один h1' : ''}`);
+    else ok(`${rel(f)}: lang, title, description, один h1`);
   }
   if (!existsSync(join(pub, 'index.html'))) err('нет public/index.html');
 }
@@ -168,6 +165,30 @@ function checkContrast() {
   }
 }
 
+// (е) <meta name="ym-id"> одинаковый во всех страницах: иначе баннер и счётчик работали бы только на части страниц
+function checkYmId() {
+  const ids = htmlPages().map(([f, t]) => {
+    const tag = [...t.matchAll(/<meta\b[^>]*>/gi)].find(([x]) => attr(x, 'name')?.toLowerCase() === 'ym-id')?.[0];
+    return [rel(f), tag ? (attr(tag, 'content') ?? '').trim() : null];
+  });
+  const values = [...new Set(ids.map(([, v]) => v))];
+  if (values.length > 1 || values.includes(null)) {
+    err(`ym-id не одинаковый во всех страницах: ${ids.map(([p, v]) => `${p} = ${v === null ? 'нет meta' : `"${v}"`}`).join(', ')}`);
+  } else if (ids.length) ok(`ym-id одинаковый во всех страницах: ${values[0] ? `"${values[0]}"` : 'пусто'}`);
+}
+
+// (ж) только с --release: ссылок-заглушек <a href="#"> быть не должно (main.js гасит их клик, но готовому сайту они не нужны)
+function checkStubLinks() {
+  if (!release) return;
+  const before = counts.ОШИБКА;
+  for (const [f, t] of htmlPages()) {
+    for (const m of t.matchAll(/<a\b[^>]*>/gi)) {
+      if (attr(m[0], 'href')?.trim() === '#') err(`${rel(f)}:${lineOf(t, m.index)} ссылка-заглушка ${m[0].replace(/\s+/g, ' ')}`);
+    }
+  }
+  if (counts.ОШИБКА === before) ok('ссылок-заглушек href="#" нет');
+}
+
 if (unknownArgs.length) {
   // Опечатка вроде --relase не должна превращать релизную проверку в мягкий прогон
   err(`неизвестный аргумент: ${unknownArgs.join(' ')}`);
@@ -180,6 +201,8 @@ if (unknownArgs.length) {
   checkHtml();
   checkExternal();
   checkContrast();
+  checkYmId();
+  checkStubLinks();
 }
 
 const failed = counts.ОШИБКА > 0;
