@@ -8,3 +8,9 @@ node_modules/
 tmp/
 Thumbs.db
 .DS_Store
+
+# Другие файлы с секретами окружения (шаблон .env.example коммитится), папка Vercel CLI, архивы
+.env.*
+!.env.example
+.vercel/
+*.zip

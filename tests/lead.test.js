@@ -296,7 +296,7 @@ test('mail message: from and to come from env, subject carries service and name'
   assert.equal(m.subject, 'Заявка с сайта: ИИ-агент — Анна');
 });
 
-test('email that never answers fails after 5 s, telegram still counts', async () => {
+test('email that never answers fails after 5 s, telegram still counts', { timeout: 3000 }, async () => {
   mock.timers.enable({ apis: ['setTimeout'] });
   try {
     const pending = deliverLead(lead(), ENV, {
