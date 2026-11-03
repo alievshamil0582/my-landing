@@ -1,7 +1,8 @@
 /* Согласие на cookie и Яндекс.Метрика.
    Счётчик подключается только после «Принять»: до этого нет ни запроса к mc.yandex.ru, ни cookie Метрики.
-   Разметка баннера лежит в index.html (#consent-banner), здесь она только показывается, прячется и читает выбор.
-   Номер счётчика берётся из <meta name="ym-id">. Пустой или нечисловой: баннера нет, ничего не грузится. */
+   Разметка баннера лежит в каждой странице (#consent-banner), здесь она только показывается, прячется и читает выбор.
+   Номер счётчика берётся из <meta name="ym-id">. Пустой или нечисловой: баннера нет, кнопки «Настройки cookie»
+   в подвале скрыты, ничего не грузится. */
 (function () {
   'use strict';
 
@@ -47,23 +48,27 @@
   window.leadAnalytics = { goal: goal };
 
   var banner = document.getElementById('consent-banner');
-  if (!counterId) return;
+  if (!counterId) return; /* без номера счётчика баннера нет, кнопки «Настройки cookie» остаются скрытыми */
 
   var choice = readChoice();
   if (choice === 'granted') loadCounter();
-  if (choice || !banner) return;
+  if (!banner) return;
 
-  /* Баннер не модальный и фокус не забирает. После выбора фокус, если он был в баннере, уходит на начало
-     содержимого (#main, как у ссылки «Перейти к содержимому»), чтобы не пропасть в никуда. */
+  var opener = null; /* кнопка «Настройки cookie», с которой открыт баннер: после выбора фокус возвращается к ней */
+
+  /* Баннер не модальный и фокус при обычном показе не забирает. После выбора фокус, если он был в баннере,
+     возвращается на кнопку «Настройки cookie» (если баннер открыт с неё) или уходит на начало содержимого
+     (#main, как у ссылки «Перейти к содержимому»), чтобы не пропасть в никуда. */
   function choose(value) {
     var hadFocus = banner.contains(document.activeElement);
     saveChoice(value);
     banner.hidden = true;
     if (value === 'granted') loadCounter();
-    var main = document.getElementById('main');
-    if (hadFocus && main) {
-      if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
-      main.focus({ preventScroll: true });
+    var back = opener && !opener.hidden ? opener : document.getElementById('main');
+    opener = null;
+    if (hadFocus && back) {
+      if (back.id === 'main' && !back.hasAttribute('tabindex')) back.setAttribute('tabindex', '-1');
+      back.focus({ preventScroll: true });
     }
   }
 
@@ -71,5 +76,21 @@
     var btn = e.target.closest && e.target.closest('[data-consent]');
     if (btn && banner.contains(btn)) choose(btn.getAttribute('data-consent') === 'granted' ? 'granted' : 'denied');
   });
-  banner.hidden = false;
+
+  /* «Настройки cookie» в подвале (кнопки скрыты в разметке, показываются только здесь): стирают сохранённый выбор,
+     снова показывают баннер и переводят в него фокус. Если счётчик уже загружен на этой странице («Принять» было
+     раньше), выгрузить его нельзя: отказ действует со следующей загрузки страницы. */
+  document.querySelectorAll('[data-consent-reset]').forEach(function (btn) {
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      memory = null;
+      try { localStorage.removeItem(KEY); } catch (e) { /* заблокирован: выбор жил только в памяти, она уже очищена */ }
+      opener = btn;
+      banner.hidden = false;
+      var first = banner.querySelector('button');
+      if (first) first.focus();
+    });
+  });
+
+  if (!choice) banner.hidden = false;
 })();

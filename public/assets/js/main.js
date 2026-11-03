@@ -11,11 +11,13 @@
     root.dataset.mode = m;
     if (m === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', m);
     var text = 'Тема: ' + labels[m] + '. Нажмите, чтобы сменить';
-    themeBtn.setAttribute('aria-label', text);
-    themeBtn.title = text;
+    if (themeBtn) {
+      themeBtn.setAttribute('aria-label', text);
+      themeBtn.title = text;
+    }
   }
   applyMode(root.dataset.mode || 'system', false);
-  themeBtn.addEventListener('click', function () {
+  if (themeBtn) themeBtn.addEventListener('click', function () {
     var next = modes[(modes.indexOf(root.dataset.mode) + 1) % modes.length];
     applyMode(next, true);
     try { localStorage.setItem('theme', next); } catch (e) {}
@@ -23,7 +25,7 @@
 
   /* Тень шапки после первого экрана */
   var header = document.getElementById('site-header');
-  function onScroll() { header.classList.toggle('scrolled', window.scrollY > 8); }
+  function onScroll() { if (header) header.classList.toggle('scrolled', window.scrollY > 8); }
   onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
 
   /* Появление блоков при прокрутке (один раз). Если настройка не удалась, показываем всё сразу.
@@ -60,7 +62,7 @@
 
   /* Мобильное меню: закрыть по клику на пункт */
   var menu = document.getElementById('mobile-menu');
-  menu.querySelectorAll('a').forEach(function (a) {
+  if (menu) menu.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', function () { if (menu.hidePopover) menu.hidePopover(); });
   });
 
@@ -98,7 +100,7 @@
   /* Кнопки «Обсудить» подставляют услугу в форму */
   var select = document.getElementById('f-service');
   document.querySelectorAll('[data-service]').forEach(function (a) {
-    a.addEventListener('click', function () { select.value = a.dataset.service; });
+    a.addEventListener('click', function () { if (select) select.value = a.dataset.service; });
   });
 
   /* Форма заявки. Если на странице формы нет (политика, 404), блок ничего не делает.
