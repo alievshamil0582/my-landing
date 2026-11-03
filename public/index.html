@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[ИМЯ] — сайты, боты и ИИ-агенты для бизнеса и экспертов</title>
+<meta name="description" content="Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения. Знаю общепит изнутри. Посмотрите работы и обсудите проект.">
+<meta name="theme-color" content="#FAF8F5">
+<meta property="og:title" content="[ИМЯ] — сайты, боты и ИИ-агенты для бизнеса и экспертов">
+<meta property="og:description" content="Цифровой мастер: создаю сайты, Telegram-ботов, ИИ-агентов и приложения. Знаю общепит изнутри.">
+<meta property="og:type" content="website">
+<!-- Номер счётчика Яндекс.Метрики; пустой, пока владелец не вписал. Подключается только после согласия (баннер). -->
+<meta name="ym-id" content="">
+
+<!-- Шрифты свои (assets/fonts), не более двух preload: Onest и Inter, кириллица -->
+<link rel="preload" href="assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+<script>
+  // Тема и флаг JS ставятся до отрисовки, чтобы не было мерцания
+  (function () {
+    var r = document.documentElement, m = 'system';
+    r.classList.add('js');
+    try { m = localStorage.getItem('theme') || 'system'; } catch (e) {}
+    if (m !== 'light' && m !== 'dark') m = 'system';
+    r.dataset.mode = m;
+    if (m !== 'system') r.setAttribute('data-theme', m);
+  })();
+</script>
+
+<link rel="stylesheet" href="assets/css/styles.css">
+<script src="assets/js/main.js" defer></script>
+</head>
+<body>
+
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<header class="site-header" id="site-header">
+  <div class="container nav-row">
+    <a class="logo" href="#top" aria-label="[ИМЯ] — на главную">
+      <span class="logo-mark" aria-hidden="true">{ }</span>
+      <span class="ph">[ИМЯ]</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Основное меню">
+      <a href="#projects">Работы</a>
+      <a href="#services">Услуги</a>
+      <a href="#process">Как я работаю</a>
+      <a href="#about">Обо мне</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="theme-btn" type="button" aria-label="Тема: как в системе. Нажмите, чтобы сменить" title="Тема">
+        <svg class="theme-icon i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        <svg class="theme-icon i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="theme-icon i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm header-cta" href="#contact">Обсудить проект</a>
+      <button class="icon-btn burger" type="button" popovertarget="mobile-menu" aria-label="Открыть меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav id="mobile-menu" popover aria-label="Мобильное меню">
+  <div class="menu-top">
+    <span class="logo"><span class="logo-mark" aria-hidden="true">{ }</span> <span class="ph">[ИМЯ]</span></span>
+    <button class="icon-btn" type="button" popovertarget="mobile-menu" popovertargetaction="hide" aria-label="Закрыть меню">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <ul>
+    <li><a href="#projects">Работы</a></li>
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#process">Как я работаю</a></li>
+    <li><a href="#about">Обо мне</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">Контакты</a></li>
+  </ul>
+  <a class="btn btn-primary" href="#contact">Обсудить проект</a>
+</nav>
+
+<main id="main">
+
+  <!-- 1. HERO -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">Цифровой мастер · сайты · боты · ИИ-агенты · приложения</p>
+        <h1 id="hero-title">Сайты, боты и ИИ-агенты, которые работают на&nbsp;ваш&nbsp;бизнес</h1>
+        <p class="sub">Я работаю в ресторанной сфере и сам пишу код. Поэтому понимаю задачу бизнеса и довожу её до работающего продукта, без посредников.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#contact">Обсудить проект
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-secondary" href="#projects">Смотреть работы</a>
+        </div>
+        <p class="micro"><span class="ph">Отвечаю в течение рабочего дня</span></p>
+      </div>
+
+      <div class="ticket-wrap">
+        <span class="hand" aria-hidden="true">ваш заказ
+          <svg viewBox="0 0 54 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c14 0 26 2 38 14M33 21l8-1-1-8"/></svg>
+        </span>
+        <div class="ticket" role="group" aria-label="Чек заказа">
+          <div class="print" style="--i:0">
+            <div class="ticket-title">Цифровая мастерская</div>
+            <div class="ticket-no">ЗАКАЗ № 001</div>
+          </div>
+          <div class="t-line print" style="--i:1"><span class="t-k">Состав</span>Сайт · Бот · ИИ-агент · Приложение</div>
+          <div class="t-line print" style="--i:2"><span class="t-k">Срок</span>обсудим</div>
+          <div class="t-line print" style="--i:3"><span class="t-k">Статус</span><span class="t-status">ждёт вашего слова<span class="caret" aria-hidden="true"></span></span></div>
+          <div class="print" style="--i:4">
+            <a class="btn btn-primary" href="#contact">Принять заказ →</a>
+            <div class="barcode" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ПОЛОСА ФАКТОВ -->
+  <section class="facts" aria-label="Коротко обо мне">
+    <div class="container">
+      <div class="facts-grid">
+        <div class="fact reveal"><strong><span class="big">3</span> проекта в портфолио</strong><span>аналитика, доставка, автоматизация кассы</span></div>
+        <div class="fact reveal" style="--d:80ms"><strong>Знаю общепит изнутри</strong><span>работаю в этой сфере</span></div>
+        <div class="fact reveal" style="--d:160ms"><strong>Пишу код сам</strong><span>от идеи до запуска, без посредников</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. РАБОТЫ -->
+  <section id="projects" aria-labelledby="projects-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>01</b> — Работы</p>
+        <h2 id="projects-title">Мои работы</h2>
+        <p class="lead">Три проекта из ресторанной сферы. Показываю, какую задачу решал и что получилось.</p>
+      </div>
+
+      <div class="projects">
+        <article class="card project reveal">
+          <div class="shot"><span class="ph">Скриншот проекта [ВСТАВИТЬ]</span></div>
+          <div class="p-body">
+            <span class="chip">веб-сервис</span>
+            <h3>Аналитика для ресторанов и кафе</h3>
+            <dl>
+              <div><dt>Задача</dt><dd>Владельцу заведения нужно быстро видеть, как идут дела, без ручных таблиц и ожидания отчётов.</dd></div>
+              <div><dt>Что сделано</dt><dd>Сервис собирает данные заведения и показывает ключевые показатели на понятных экранах.</dd></div>
+              <div><dt>Результат</dt><dd><span class="ph">[ВСТАВИТЬ факты: что стало проще, быстрее, прозрачнее]</span></dd></div>
+            </dl>
+            <ul class="tags"><li class="ph">стек [ВСТАВИТЬ]</li></ul>
+            <a class="tlink" href="#"><span class="ph">Открыть [ссылка — ВСТАВИТЬ]</span></a>
+          </div>
+        </article>
+
+        <article class="card project reveal" style="--d:100ms">
+          <div class="shot"><span class="ph">Скриншот проекта [ВСТАВИТЬ]</span></div>
+          <div class="p-body">
+            <span class="chip">сайт</span>
+            <h3>Сайт доставки еды</h3>
+            <dl>
+              <div><dt>Задача</dt><dd>Заведению нужен собственный сайт, где клиент выбирает блюда и оформляет заказ.</dd></div>
+              <div><dt>Что сделано</dt><dd>Сайт с меню, корзиной и оформлением заказа, удобный с телефона. <span class="ph">[УТОЧНИТЬ: оплата, интеграции]</span></dd></div>
+              <div><dt>Результат</dt><dd><span class="ph">[ВСТАВИТЬ]</span></dd></div>
+            </dl>
+            <ul class="tags"><li class="ph">стек [ВСТАВИТЬ]</li></ul>
+            <a class="tlink" href="#"><span class="ph">Открыть [ссылка — ВСТАВИТЬ]</span></a>
+          </div>
+        </article>
+
+        <article class="card project reveal" style="--d:200ms">
+          <div class="shot"><span class="ph">Скриншот или запись экрана [ВСТАВИТЬ]</span></div>
+          <div class="p-body">
+            <span class="chip">Telegram-бот</span>
+            <h3>Бот: тревожные операции на кассе</h3>
+            <dl>
+              <div><dt>Задача</dt><dd>Руководителю нужно сразу узнавать о рискованных операциях на кассе, а не находить их при проверке отчётов.</dd></div>
+              <div><dt>Что сделано</dt><dd>Бот следит за кассой и мгновенно присылает уведомление в Telegram, когда происходит рискованная операция. <span class="ph">[УТОЧНИТЬ: какие операции, как подключён к кассе]</span></dd></div>
+              <div><dt>Результат</dt><dd><span class="ph">[ВСТАВИТЬ]</span></dd></div>
+            </dl>
+            <ul class="tags"><li class="ph">стек [ВСТАВИТЬ]</li></ul>
+            <a class="tlink" href="#"><span class="ph">Демо [ссылка — ВСТАВИТЬ]</span></a>
+          </div>
+        </article>
+      </div>
+
+      <div class="more-line reveal">
+        <p>Нужно что-то похожее?</p>
+        <a class="btn btn-secondary btn-sm" href="#contact">Расскажите о задаче</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. УСЛУГИ -->
+  <section id="services" class="band" aria-labelledby="services-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>02</b> — Услуги</p>
+        <h2 id="services-title">Что я делаю</h2>
+        <p class="lead">Четыре направления. Стоимость и срок называю после короткого разговора, до начала работы.</p>
+      </div>
+
+      <div class="services">
+        <article class="card service reveal">
+          <span class="num">01</span>
+          <h3>Сайты и лендинги</h3>
+          <p>Сайт, который объясняет, чем вы полезны, и собирает заявки.</p>
+          <ul>
+            <li>Дизайн и вёрстка</li>
+            <li>Адаптив под телефон</li>
+            <li>Форма заявок</li>
+            <li>Базовая SEO-настройка</li>
+            <li>Запуск на вашем домене</li>
+          </ul>
+          <a class="btn btn-secondary btn-sm" href="#contact" data-service="Сайт">Обсудить</a>
+        </article>
+
+        <article class="card service reveal" style="--d:80ms">
+          <span class="num">02</span>
+          <h3>Telegram-боты и автоматизация</h3>
+          <p>Бот, который берёт на себя рутину: заявки, записи, уведомления, контроль.</p>
+          <ul>
+            <li>Сценарии работы</li>
+            <li>Подключение к вашим системам и таблицам</li>
+            <li>Уведомления</li>
+            <li>Управление ботом</li>
+          </ul>
+          <a class="btn btn-secondary btn-sm" href="#contact" data-service="Telegram-бот">Обсудить</a>
+        </article>
+
+        <article class="card service reveal">
+          <span class="num">03</span>
+          <h3>ИИ-агенты</h3>
+          <p>Помощник на базе ИИ, который отвечает клиентам, разбирает данные или выполняет рутинные задачи по вашим правилам.</p>
+          <ul>
+            <li>Постановка задачи</li>
+            <li>Подключение к вашим данным</li>
+            <li>Ограничения и проверка ответов</li>
+            <li>Запуск и доработка</li>
+          </ul>
+          <a class="btn btn-secondary btn-sm" href="#contact" data-service="ИИ-агент">Обсудить</a>
+        </article>
+
+        <article class="card service reveal" style="--d:80ms">
+          <span class="num">04</span>
+          <h3>Приложения и сервисы</h3>
+          <p>Веб-приложения и панели: аналитика, учёт, личные кабинеты.</p>
+          <ul>
+            <li>Проектирование</li>
+            <li>Разработка</li>
+            <li>Интеграции</li>
+            <li>Доработка после запуска</li>
+          </ul>
+          <a class="btn btn-secondary btn-sm" href="#contact" data-service="Приложение">Обсудить</a>
+        </article>
+      </div>
+      <p class="services-note reveal">Не знаете, что вам нужно? <a class="tlink" href="#contact">Опишите задачу — подскажу</a>.</p>
+    </div>
+  </section>
+
+  <!-- 5. КАК Я РАБОТАЮ -->
+  <section id="process" aria-labelledby="process-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>03</b> — Процесс</p>
+        <h2 id="process-title">Как проходит работа</h2>
+        <p class="lead">Пять простых шагов, на каждом вы понимаете, что происходит.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step reveal"><span class="status"><b>01</b> · принят</span><h3>Знакомство</h3><p>Вы рассказываете о задаче своими словами. Я задаю вопросы и фиксирую, что именно нужно получить.</p></li>
+        <li class="step reveal" style="--d:80ms"><span class="status"><b>02</b> · обсуждаем</span><h3>Предложение</h3><p>Я описываю решение, этапы, срок и стоимость. Начинаем только после вашего «да».</p></li>
+        <li class="step reveal" style="--d:160ms"><span class="status"><b>03</b> · в работе</span><h3>Работа</h3><p>Делаю по этапам и показываю промежуточный результат, чтобы вы могли вовремя поправить.</p></li>
+        <li class="step reveal" style="--d:240ms"><span class="status"><b>04</b> · запущен</span><h3>Запуск</h3><p>Публикую, проверяю на реальных данных и показываю, как этим пользоваться.</p></li>
+        <li class="step reveal" style="--d:320ms"><span class="status"><b>05</b> · на связи</span><h3>Поддержка</h3><p>Остаюсь на связи после запуска: правки, вопросы, развитие.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 6. ОБО МНЕ -->
+  <section id="about" class="band" aria-labelledby="about-title">
+    <div class="container about-grid">
+      <div class="reveal">
+        <div class="portrait" role="img" aria-label="Здесь будет портрет автора">
+          <span class="ph">Фото автора<br>[ВСТАВИТЬ]</span>
+          <span class="note" aria-hidden="true">здесь буду я</span>
+        </div>
+      </div>
+      <div class="about-text reveal" style="--d:100ms">
+        <p class="eyebrow"><b>04</b> — Обо мне</p>
+        <h2 id="about-title">Знаю общепит изнутри и пишу код сам</h2>
+        <p>Я работаю в ресторанной сфере и вижу, где бизнес теряет время и деньги: ручной учёт, лишние звонки, операции, за которыми никто не следит. Я умею программировать, поэтому не передаю вашу задачу «разработчику», а довожу её до работающего решения сам.</p>
+        <p>Я только начинаю путь цифрового мастера. У меня пока три проекта, а не сотня. Зато вы работаете напрямую со мной, видите результат на каждом этапе, а ваш успех для меня самый важный аргумент в портфолио.</p>
+        <ul class="pills">
+          <li>Работаю в ресторанной сфере</li>
+          <li>Пишу код сам</li>
+          <li>Работаю напрямую, без посредников</li>
+        </ul>
+        <div class="tools">
+          <span class="eyebrow">Инструменты</span>
+          <ul class="tags"><li class="ph">стек [ВСТАВИТЬ]</li><li class="ph">инструменты [ВСТАВИТЬ]</li></ul>
+        </div>
+        <a class="btn btn-secondary" href="#contact">Написать мне в Telegram <span class="ph">[ВСТАВИТЬ]</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. ПЕРВЫМ КЛИЕНТАМ (опциональная секция): включить, когда будет решение или первый настоящий отзыв.
+       Чтобы включить, удалите строки-разделители комментария вокруг секции ниже. -->
+  <!--
+  <section id="start" aria-labelledby="start-title">
+    <div class="container">
+      <div class="card start-box">
+        <p class="eyebrow">Первым клиентам</p>
+        <h2 id="start-title">Беру первые проекты на особых условиях</h2>
+        <p>Я расширяю портфолио и готов взять несколько первых проектов на выгодных условиях. Взамен прошу честный отзыв и разрешение показать работу.</p>
+        <p><span class="ph">Условия: [ВСТАВИТЬ скидка, количество мест, срок]</span></p>
+        <div><a class="btn btn-primary" href="#contact">Узнать условия</a></div>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <!-- 8. ОТЗЫВЫ (опциональная секция): включить, когда будет решение или первый настоящий отзыв.
+       Показывать только настоящие отзывы. Чтобы включить, удалите строки-разделители комментария вокруг секции ниже. -->
+  <!--
+  <section id="reviews" class="band" aria-labelledby="reviews-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Отзывы</p>
+        <h2 id="reviews-title">Что говорят клиенты</h2>
+      </div>
+      <figure class="card review" style="margin:0">
+        <blockquote class="ph">«[ВСТАВИТЬ настоящую цитату клиента]»</blockquote>
+        <figcaption><cite class="ph">[Имя, должность, бизнес]</cite><br><small class="ph">[Результат одной строкой]</small></figcaption>
+      </figure>
+    </div>
+  </section>
+  -->
+
+  <!-- 9. FAQ -->
+  <section id="faq" aria-labelledby="faq-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>05</b> — FAQ</p>
+        <h2 id="faq-title">Частые вопросы</h2>
+      </div>
+
+      <div class="faq reveal">
+        <details>
+          <summary>Сколько это стоит?</summary>
+          <div class="ans">Стоимость зависит от задачи: лендинг, бот и приложение — разный объём работы. После короткого разговора я называю цену и состав работ в письменном виде до начала. <span class="ph">[ПОДТВЕРДИТЬ: «без скрытых доплат»]</span></div>
+        </details>
+        <details>
+          <summary>Сколько времени это займёт?</summary>
+          <div class="ans">Зависит от задачи. Конкретный срок называю после обсуждения и показываю промежуточные результаты по ходу работы.</div>
+        </details>
+        <details>
+          <summary>Вы только начинаете. Почему вам можно доверять?</summary>
+          <div class="ans">У меня три готовых проекта, вы можете посмотреть, как они работают. Вы общаетесь напрямую со мной, а не с менеджером, и видите результат на каждом этапе. Если что-то не подходит, говорите, и мы исправляем до сдачи.</div>
+        </details>
+        <details>
+          <summary>Мне нужно разбираться в технике?</summary>
+          <div class="ans">Нет. Опишите задачу своими словами, я задам вопросы и сам переведу её на язык разработки.</div>
+        </details>
+        <details>
+          <summary>Кому принадлежит код и сайт после работы?</summary>
+          <div class="ans"><span class="ph">[ПОДТВЕРДИТЬ]</span> Результат принадлежит вам. Я передаю доступы и исходники после оплаты.</div>
+        </details>
+        <details>
+          <summary>Что будет после запуска?</summary>
+          <div class="ans">Я остаюсь на связи: помогу с правками и вопросами. Формат поддержки обсуждаем отдельно.</div>
+        </details>
+        <details>
+          <summary>Как вы обращаетесь с данными, особенно в ИИ-агентах?</summary>
+          <div class="ans"><span class="ph">[ПОДТВЕРДИТЬ]</span> Использую только данные, нужные для задачи, и заранее обсуждаю с вами, что можно передавать ИИ-сервисам. Доступы храню безопасно и передаю вам по завершении.</div>
+        </details>
+        <details>
+          <summary>Вы работаете только с ресторанами?</summary>
+          <div class="ans">Нет. Общепит — моя сфера, и там у меня больше всего опыта, но я делаю проекты для экспертов и бизнеса из любых отраслей.</div>
+        </details>
+      </div>
+      <!-- Ответы с обязательствами (цена до старта, права на код, обработка данных) владелец подтверждает до публикации: пометки [ПОДТВЕРДИТЬ] убрать после подтверждения. -->
+    </div>
+  </section>
+
+  <!-- 10. КОНТАКТЫ И ФОРМА -->
+  <section id="contact" class="band" aria-labelledby="contact-title">
+    <div class="container contact-grid">
+      <div class="contact-copy reveal">
+        <p class="eyebrow"><b>06</b> — Контакты</p>
+        <h2 id="contact-title">Расскажите о задаче</h2>
+        <p class="lead">Опишите, что хотите получить, даже если пока не знаете, как это называется. Отвечу и предложу решение.</p>
+        <div class="direct">
+          <span class="row"><span class="k">Email</span><span class="ph">[ВСТАВИТЬ]</span></span>
+          <span class="row"><span class="k">Telegram</span><span class="ph">[ВСТАВИТЬ]</span></span>
+          <span class="row"><span class="k">Телефон</span><span class="ph">[ВСТАВИТЬ]</span></span>
+        </div>
+        <p class="micro"><span class="ph">Отвечаю в течение рабочего дня</span></p>
+      </div>
+
+      <div class="card form-card reveal" style="--d:100ms">
+        <form id="lead-form" action="/api/lead" method="post">
+          <div class="field">
+            <label for="f-name">Как вас зовут <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="f-name" name="name" autocomplete="name" required aria-describedby="e-name">
+            <p class="err" id="e-name" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="f-contact">Как с вами связаться <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="f-contact" name="contact" autocomplete="off" placeholder="Telegram @имя, телефон или email" required aria-describedby="e-contact">
+            <p class="err" id="e-contact" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="f-service">Что нужно сделать</label>
+            <select id="f-service" name="service">
+              <option>Сайт</option>
+              <option>Telegram-бот</option>
+              <option>ИИ-агент</option>
+              <option>Приложение</option>
+              <option selected>Пока не знаю</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-msg">Расскажите о задаче</label>
+            <textarea id="f-msg" name="message"></textarea>
+          </div>
+          <div class="hp" aria-hidden="true">
+            <label for="f-web">Ваш сайт</label>
+            <input type="text" id="f-web" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <input type="hidden" name="elapsed_ms" value="">
+          <div class="field">
+            <label class="check" for="f-consent">
+              <input type="checkbox" id="f-consent" name="consent" required aria-describedby="e-consent">
+              <span>Согласен на обработку персональных данных (<a class="tlink" href="#"><span class="ph">политика обработки персональных данных</span></a>)</span>
+            </label>
+            <p class="err" id="e-consent" role="alert"></p>
+          </div>
+          <button class="btn btn-primary" type="submit" id="f-submit">Отправить заявку
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <div id="form-result" aria-live="polite"></div>
+          <p class="form-note">Или напишите сразу: Telegram <span class="ph">[ВСТАВИТЬ]</span> · email <span class="ph">[ВСТАВИТЬ]</span></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true">{ }</span> <span class="ph">[ИМЯ]</span></a>
+        <p style="margin-top:14px;color:var(--muted);max-width:34ch">Цифровой мастер. Сайты, боты, ИИ-агенты и приложения для бизнеса и экспертов.</p>
+      </div>
+      <nav aria-label="Навигация в подвале">
+        <h2>Разделы</h2>
+        <ul>
+          <li><a href="#projects">Работы</a></li>
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#about">Обо мне</a></li>
+          <li><a href="#contact">Контакты</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Связь</h2>
+        <ul>
+          <li>Telegram <span class="ph">[ВСТАВИТЬ]</span></li>
+          <li>Email <span class="ph">[ВСТАВИТЬ]</span></li>
+          <li><a href="#"><span class="ph">Политика обработки персональных данных</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 <span class="ph">[ИМЯ]</span>. Цифровой мастер</span>
+      <span>Дизайн и код — сделаны мной</span>
+    </div>
+  </div>
+</footer>
+
+<div id="consent-banner" hidden></div>
+
+</body>
+</html>
