@@ -1,0 +1,10 @@
+# Секреты и данные посетителей: никогда не коммитить
+.env
+api/config.php
+data/
+
+# Служебное
+node_modules/
+tmp/
+Thumbs.db
+.DS_Store
