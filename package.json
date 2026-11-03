@@ -1,0 +1,11 @@
+{
+  "name": "my-landing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  },
+  "dependencies": {
+    "nodemailer": "^10.3.1"
+  }
+}
