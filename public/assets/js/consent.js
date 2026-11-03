@@ -13,6 +13,7 @@
   var raw = meta ? (meta.getAttribute('content') || '').trim() : '';
   var counterId = /^\d+$/.test(raw) ? Number(raw) : 0;
   var loaded = false;
+  var denied = false; /* на этой странице выбрано «Отклонить»: счётчик уже не выгрузить, но цели в него больше не идут */
   var memory = null; /* выбор на время жизни страницы, если localStorage недоступен */
 
   function readChoice() {
@@ -39,10 +40,11 @@
     document.head.appendChild(s);
   }
 
-  /* Цель в Метрику: только после согласия и только из списка GOALS. Никогда не бросает и ничего не копит заранее. */
+  /* Цель в Метрику: только после согласия, пока на странице не выбрано «Отклонить», и только из списка GOALS.
+     Никогда не бросает и ничего не копит заранее. */
   function goal(name) {
     try {
-      if (loaded && GOALS.indexOf(name) !== -1) window.ym(counterId, 'reachGoal', name);
+      if (loaded && !denied && GOALS.indexOf(name) !== -1) window.ym(counterId, 'reachGoal', name);
     } catch (e) { /* аналитика не должна ломать страницу */ }
   }
   window.leadAnalytics = { goal: goal };
@@ -62,6 +64,7 @@
   function choose(value) {
     var hadFocus = banner.contains(document.activeElement);
     saveChoice(value);
+    denied = value === 'denied'; /* «Принять» после отказа снимает запрет */
     banner.hidden = true;
     if (value === 'granted') loadCounter();
     var back = opener && !opener.hidden ? opener : document.getElementById('main');
