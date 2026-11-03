@@ -44,9 +44,9 @@ export default async function handler(req, res) {
     const { status, body } = await handle({ method: req.method, fields: parseFields(req.body), ip: clientIp(req) });
     if (status === 405) res.setHeader('Allow', 'POST');
     res.status(status).json(body);
-  } catch {
-    // Неожиданный сбой: без деталей, чтобы в журнал не попали данные заявки.
-    console.error('lead handler failed');
+  } catch (err) {
+    // Неожиданный сбой: только тип и код ошибки; message и стек могут содержать данные заявки.
+    console.error('lead handler failed', err?.name, err?.code);
     res.status(500).json({ ok: false, error: 'server' });
   }
 }

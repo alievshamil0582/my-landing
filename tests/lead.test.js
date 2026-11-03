@@ -249,6 +249,20 @@ test('both fail, then the visitor retries within 60 s → delivered, not swallow
   assert.equal(fetch.calls.length, 2);
 });
 
+test('deliver itself throws → 502 {ok:false, error:"delivery"}, guard released so a retry within 60 s is delivered', async () => {
+  let broken = true;
+  const calls = [];
+  const deliver = async (l) => { calls.push(l); if (broken) throw new Error('unexpected failure'); return { email: true, telegram: true }; };
+  const handle = createHandler({ deliver, guard: createGuard(), now: () => new Date(AT) });
+  const res = await post(handle, fields());
+  assert.equal(res.status, 502);
+  assert.deepEqual(res.body, { ok: false, error: 'delivery' });
+  broken = false;
+  const retry = await post(handle, fields());
+  assert.equal(retry.status, 200);
+  assert.equal(calls.length, 2, 'the retry is not swallowed as a duplicate');
+});
+
 test('no env configured → 502 and no network call', async () => {
   const fetch = spyFetch();
   const sendMail = spyMail();
@@ -498,7 +512,7 @@ test('api/lead.js: the client IP is the first x-forwarded-for entry; the limit w
   });
 });
 
-test('api/lead.js: failure log carries channel names only, answers are JSON with no-store', async () => {
+test('api/lead.js: failure log carries channel names only, the answer carries Cache-Control: no-store', async () => {
   await withNoEnv(async ({ errors }) => {
     const res = await callApi({ body: fields({ name: 'ЛичноеИмя', contact: '@secret-contact' }), headers: { 'x-forwarded-for': '198.51.100.30' } });
     assert.equal(res.headers['cache-control'], 'no-store');
@@ -506,5 +520,25 @@ test('api/lead.js: failure log carries channel names only, answers are JSON with
     assert.match(logged, /email/);
     assert.match(logged, /telegram/);
     assert.ok(!logged.includes('ЛичноеИмя') && !logged.includes('@secret-contact'));
+  });
+});
+
+test('api/lead.js: an unexpected exception → 500 {ok:false, error:"server"}, the log has error name and code but no visitor data', async () => {
+  await withNoEnv(async ({ errors }) => {
+    const res = fakeRes();
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '198.51.100.40' },
+      // обращение к body бросает ошибку, в тексте которой лежат данные посетителя (как могло бы быть в разборе тела)
+      get body() { throw Object.assign(new TypeError('cannot parse ЛичноеИмя @secret-contact'), { code: 'ERR_TEST' }); },
+    };
+    await apiHandler(req, res);
+    assert.equal(res.statusCode, 500);
+    assert.deepEqual(res.payload, { ok: false, error: 'server' });
+    assert.equal(res.headers['cache-control'], 'no-store');
+    const logged = errors.mock.calls.map((c) => c.arguments.map(String).join(' ')).join('\n');
+    assert.match(logged, /TypeError/);
+    assert.match(logged, /ERR_TEST/);
+    assert.ok(!logged.includes('ЛичноеИмя') && !logged.includes('@secret-contact') && !logged.includes('cannot parse'));
   });
 });
